@@ -3,20 +3,17 @@ import sys
 if sys.version_info[0] < 3 and sys.version_info[1] < 2:
 	raise Exception("Must be using >= Python 3.2")
 
-from os import listdir, path
+from os import path
 
 if not path.isfile('face_detection/detection/sfd/s3fd.pth'):
 	raise FileNotFoundError('Save the s3fd model to face_detection/detection/sfd/s3fd.pth \
 							before running this script!')
 
-import multiprocessing as mp
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import numpy as np
 import argparse, os, cv2, traceback, subprocess
 from tqdm import tqdm
 from glob import glob
-import audio
-from hparams import hparams as hp
 
 import face_detection
 
@@ -24,12 +21,12 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--ngpu', help='Number of GPUs across which to run in parallel', default=1, type=int)
 parser.add_argument('--batch_size', help='Single GPU Face detection batch size', default=32, type=int)
-parser.add_argument("--data_root", help="Root folder of the LRS2 dataset", required=True)
-parser.add_argument("--preprocessed_root", help="Root folder of the preprocessed dataset", required=True)
+parser.add_argument("--data_root", help="Root folder of the LRS2 dataset", default="data/", required=False)
+parser.add_argument("--preprocessed_root", help="Root folder of the preprocessed dataset", default="pro_data/", required=False)
 
 args = parser.parse_args()
 
-fa = [face_detection.FaceAlignment(face_detection.LandmarksType._2D, flip_input=False, 
+fa = [face_detection.FaceAlignment(face_detection.LandmarksType._2D, flip_input=False,
 									device='cuda:{}'.format(id)) for id in range(args.ngpu)]
 
 template = 'ffmpeg -loglevel panic -y -i {} -strict -2 {}'
