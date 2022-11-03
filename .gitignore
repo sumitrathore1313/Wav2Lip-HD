@@ -8,6 +8,9 @@ __pycache__
 *.avi
 *.wav
 filelists/*.txt
+lrs2_preprocessed/*
+data_root/main/*
+data_root/pretrain/*
 evaluation/test_filelists/lr*.txt
 *.pyc
 *.mkv
