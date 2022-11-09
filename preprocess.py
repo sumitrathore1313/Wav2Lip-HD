@@ -20,9 +20,9 @@ if sys.version_info[0] < 3 and sys.version_info[1] < 2:
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--batch_size', help='Single GPU Face detection batch size', default=32, type=int)
+parser.add_argument('--batch_size', help='Single GPU Face detection batch size', default=128, type=int)
 parser.add_argument('--device', help='Use cuda or cpu', default="cuda")
-parser.add_argument("--data_root", help="Root folder of the LRS2 dataset", default="data_root/main")
+parser.add_argument("--data_root", help="Root folder of the LRS2 dataset", default="E:/lrs2/mvlrs_v1/main")
 parser.add_argument("--preprocessed_root", help="Root folder of the preprocessed dataset", default="lrs2_preprocessed")
 parser.add_argument("--ffmpeg_path", help="Path of FFMPEG", default="C:\\ffmpeg\\bin\\ffmpeg")
 parser.add_argument("--verbose", help="Path of FFMPEG", default=False)

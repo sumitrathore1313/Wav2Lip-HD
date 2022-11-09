@@ -20,3 +20,5 @@ evaluation/test_filelists/lr*.txt
 /data/
 /pro_data/
 .idea
+/face_detection/
+/tecoGAN/

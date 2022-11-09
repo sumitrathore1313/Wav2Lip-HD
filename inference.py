@@ -11,12 +11,12 @@ import platform
 parser = argparse.ArgumentParser(description='Inference code to lip-sync videos in the wild using Wav2Lip models')
 
 parser.add_argument('--checkpoint_path', type=str, 
-					help='Name of saved checkpoint to load weights from', required=True)
+					help='Name of saved checkpoint to load weights from', default="checkpoints/wav2lip_gan.pth")
 
 parser.add_argument('--face', type=str, 
-					help='Filepath of video/image that contains faces to use', required=True)
+					help='Filepath of video/image that contains faces to use', default="inputs/input1.mp4")
 parser.add_argument('--audio', type=str, 
-					help='Filepath of video/audio file to use as raw audio source', required=True)
+					help='Filepath of video/audio file to use as raw audio source',  default="inputs/input1.mp3")
 parser.add_argument('--outfile', type=str, help='Video path to save result. See default for an e.g.', 
 								default='results/result_voice.mp4')
 
@@ -255,6 +255,8 @@ def main():
 			frame_h, frame_w = full_frames[0].shape[:-1]
 			out = cv2.VideoWriter('temp/result.avi', 
 									cv2.VideoWriter_fourcc(*'DIVX'), fps, (frame_w, frame_h))
+			fout = cv2.VideoWriter('temp/fresult.avi',
+									cv2.VideoWriter_fourcc(*'DIVX'), fps, (96, 96))
 
 		img_batch = torch.FloatTensor(np.transpose(img_batch, (0, 3, 1, 2))).to(device)
 		mel_batch = torch.FloatTensor(np.transpose(mel_batch, (0, 3, 1, 2))).to(device)
@@ -263,18 +265,27 @@ def main():
 			pred = model(mel_batch, img_batch)
 
 		pred = pred.cpu().numpy().transpose(0, 2, 3, 1) * 255.
-		
+		# pred_count = 1000
+
 		for p, f, c in zip(pred, frames, coords):
 			y1, y2, x1, x2 = c
+
+			# cv2.imwrite('E:\\tecoGAN\\LR\\calendar\\'+str(pred_count)+'.png', p.astype(np.uint8))
+			fout.write(p.astype(np.uint8))
+
 			p = cv2.resize(p.astype(np.uint8), (x2 - x1, y2 - y1))
 
 			f[y1:y2, x1:x2] = p
+			f[y1:y2, x1:x2] = p
 			out.write(f)
+			# pred_count += 1
 
 	out.release()
+	fout.release()
 
 	command = 'ffmpeg -y -i {} -i {} -strict -2 -q:v 1 {}'.format(args.audio, 'temp/result.avi', args.outfile)
 	subprocess.call(command, shell=platform.system() != 'Windows')
+
 
 if __name__ == '__main__':
 	main()
